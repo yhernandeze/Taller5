@@ -20,6 +20,7 @@ MLFLOW_TRACKING_URI = os.getenv('MLFLOW_TRACKING_URI', 'http://mlflow:5000')
 GROUP_NUMBER = os.getenv('GROUP_NUMBER', '6')
 DATA_API_URL = os.getenv('DATA_API_URL', f'http://10.43.100.103:8080/data?group_number={GROUP_NUMBER}')
 
+#Test
 url = "http://10.43.100.103:8080/data?group_number=6"
 
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
