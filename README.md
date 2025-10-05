@@ -20,6 +20,20 @@ La arquitectura del sistema está compuesta por múltiples servicios desplegados
 - **API de interferencia**: Servicio que expone el modelo entrenado para realizar predicciones. Se conecta a MLflow para cargar modelos directamente desde el artifact store (MinIO).
 - **UI (Streamlit)**: Aplicación web que permite a los usuarios interactuar de forma visual con el sistema, hacer inferencias, ver resultados y consultar métricas del modelo (TBC)
 
+### Volúmenes
+Se han definido volúmenes persistentes para garantizar que los datos de las bases de datos y el almacenamiento de artefactos no se pierdan cuando se detienen los contenedores:
+
+- **mysql_data**: Persistencia de la base de datos MySQL
+- **minio_data**: Almacenamiento de objetos en MinIO
+- **postgres_data**: Persistencia de la base de datos PostgreSQL
+
+### Variables de Entorno:
+Credenciales de bases de datos
+Usuario y contraseña de MinIO
+Nombre del bucket
+URL de la API externa
+Número del grupo asignado: 6
+
 ### Acceso a los Servicios
 
 Los servicios están disponibles en las siguientes direcciones:
