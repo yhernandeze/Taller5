@@ -22,8 +22,7 @@ La arquitectura del sistema está compuesta por múltiples servicios desplegados
 
 ### Acceso a los Servicios
 
-Una vez que todos los servicios estén corriendo:
-
+Los servicios están disponibles en las siguientes direcciones:
 | Servicio              | URL                                                       | Credenciales                                       |
 |-----------------------|-----------------------------------------------------------|---------------------------------------------------|
 | **Airflow**           | [http://10.43.100.103:8080](http://10.43.100.103:8080)     | usuario: `admin` / password: `admin`              |
@@ -32,6 +31,7 @@ Una vez que todos los servicios estén corriendo:
 | **Inference API**     | [http://10.43.100.103:8989](http://10.43.100.103:8989)     | Sin autenticación                                 |
 | **API Docs**          | [http://10.43.100.103:8989/docs](http://10.43.100.103:8989/docs) | Documentación interactiva                         |
 | **Streamlit UI**      | [http://10.43.100.103:8503](http://10.43.100.103:8503)   | Sin autenticación                                 |
+
 
 
 
