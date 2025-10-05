@@ -47,6 +47,8 @@ Los servicios están disponibles en las siguientes direcciones:
 | **Streamlit UI**      | [http://10.43.100.103:8503](http://10.43.100.103:8503)   | Sin autenticación                                 |
 
 
+![Servicios](./images/servicios.png)
+
 
 
 
