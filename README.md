@@ -5,8 +5,8 @@ El propósito principal del taller es recolectar datos proporcionados por una AP
 
 Esta API entrega conjuntos de datos aleatorios que cambian cada 5 minutos. Para obtener una muestra representativa, es necesario realizar al menos una solicitud por cada uno de los 10 batches que se publican periódicamente. Los datos recolectados serán utilizados para:
 
-Entrenar un modelo de IA utilizando MLflow.
-Desplegar una API de inferencia que sirva predicciones basadas en ese modelo.
+#### Entrenar un modelo de IA utilizando MLflow.
+#### Desplegar una API de inferencia que sirva predicciones basadas en ese modelo.
 
 ### Infrestructura del proyecto
 
@@ -25,3 +25,4 @@ Airflow (Webserver & Scheduler): Herramienta de orquestación que permite progra
 API de interferencia: Servicio que expone el modelo entrenado para realizar predicciones. Se conecta a MLflow para cargar modelos directamente desde el artifact store (MinIO).
 
 UI (Streamlit): Aplicación web que permite a los usuarios interactuar de forma visual con el sistema, hacer inferencias, ver resultados y consultar métricas del modelo (TBC)
+
