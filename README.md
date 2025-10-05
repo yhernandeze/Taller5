@@ -28,11 +28,11 @@ Se han definido volúmenes persistentes para garantizar que los datos de las bas
 - **postgres_data**: Persistencia de la base de datos PostgreSQL
 
 ### Variables de Entorno:
-Credenciales de bases de datos
-Usuario y contraseña de MinIO
-Nombre del bucket
-URL de la API externa
-Número del grupo asignado: 6
+* Credenciales de bases de datos
+* Usuario y contraseña de MinIO
+* Nombre del bucket
+* URL de la API externa
+* Número del grupo asignado: 6
 
 ### Acceso a los Servicios
 
@@ -45,6 +45,7 @@ Los servicios están disponibles en las siguientes direcciones:
 | **Inference API**     | [http://10.43.100.103:8989](http://10.43.100.103:8989)     | Sin autenticación                                 |
 | **API Docs**          | [http://10.43.100.103:8989/docs](http://10.43.100.103:8989/docs) | Documentación interactiva                         |
 | **Streamlit UI**      | [http://10.43.100.103:8503](http://10.43.100.103:8503)   | Sin autenticación                                 |
+
 
 
 
