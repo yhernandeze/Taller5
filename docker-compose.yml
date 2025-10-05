@@ -20,6 +20,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d:ro
     networks:
       - mlops_network
     
@@ -134,6 +135,7 @@ services:
       AIRFLOW__WEBSERVER__SECRET_KEY: 'your-secret-key-here'
       MLFLOW_TRACKING_URI: http://mlflow:5000
       DATA_API_URL: ${DATA_API_URL}
+      DATA_DB_URI: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/datasets_db
       GROUP_NUMBER: ${GROUP_NUMBER}
       AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
       AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
@@ -167,6 +169,7 @@ services:
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
       MLFLOW_TRACKING_URI: http://mlflow:5000
       DATA_API_URL: ${DATA_API_URL}
+      DATA_DB_URI: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/datasets_db
       GROUP_NUMBER: ${GROUP_NUMBER}
       AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
       AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
