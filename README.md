@@ -30,7 +30,7 @@ La arquitectura del sistema está compuesta por múltiples servicios desplegados
 │       │             │                                   │
 │       ↓             ↓                                   │
 │  ┌──────────┐  ┌─────────────┐                        │
-│  │Data API  │  │  FastAPI    │← Puerto 8989           │
+│  │Data API  │  │  FastAPI    │← Puerto 8080           │
 │  │External  │  │  Inference  │                        │
 │  └──────────┘  └─────────────┘                        │
 │                                                         │
@@ -94,6 +94,7 @@ Proyecto2/
     ├── app.py
     └── requirements.txt
 ```
+
 
 
 
