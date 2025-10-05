@@ -35,7 +35,7 @@ La arquitectura del sistema está compuesta por múltiples servicios desplegados
 │  └──────────┘  └─────────────┘                        │
 │                                                         │
 │  ┌──────────────────┐                                  │
-│  │   Streamlit UI   │← Puerto 8503 (BONO)             │
+│  │   Streamlit UI   │← Puerto 8503              │
 │  └──────────────────┘                                  │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -62,7 +62,7 @@ Los servicios están disponibles en las siguientes direcciones:
 | **Airflow**           | [http://10.43.100.103:8080](http://10.43.100.103:8080)     | usuario: `admin` / password: `admin`              |
 | **MLflow**            | [http://10.43.100.103:5000](http://10.43.100.103:5000)     | Sin autenticación                                 |
 | **MinIO Console**     | [http://10.43.100.103:9001](http://10.43.100.103:9001)     | usuario: `admin` / password: `supersecret`        |
-| **Inference API**     | [http://10.43.100.103:8989](http://10.43.100.103:8989)     | Sin autenticación                                 |
+| **Inference API**     | [http://10.43.100.103:8989](http://10.43.100.103:8080)     | Sin autenticación                                 |
 | **API Docs**          | [http://10.43.100.103:8989/docs](http://10.43.100.103:8080/docs) | Documentación interactiva                         |
 | **Streamlit UI**      | [http://10.43.100.103:8503](http://10.43.100.103:8503)   | Sin autenticación                                 |
 
@@ -89,11 +89,12 @@ Proyecto2/
 │   ├── main.py
 │   └── requirements.txt
 
-└── ui/                        # Interfaz Gráfica (BONO)
+└── ui/                        # Interfaz Gráfica
     ├── Dockerfile
     ├── app.py
     └── requirements.txt
 ```
+
 
 
 
