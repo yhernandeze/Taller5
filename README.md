@@ -70,7 +70,7 @@ Los servicios están disponibles en las siguientes direcciones:
 ### Estructura del Proyecto
 
 ```
-Proyecto2/
+taller5/
 ├── docker-compose.yml         # Orquestación de servicios
 ├── .env                       # Variables de entorno
 ├── README.md                  # Este archivo
@@ -94,6 +94,7 @@ Proyecto2/
     ├── app.py
     └── requirements.txt
 ```
+
 
 
 
