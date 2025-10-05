@@ -12,19 +12,27 @@ Esta API entrega conjuntos de datos aleatorios que cambian cada 5 minutos. Para 
 
 La arquitectura del sistema está compuesta por múltiples servicios desplegados en contenedores Docker, cada uno con un rol específico en el flujo de MLOps:
 
-- MySQL: Base de datos para almacenar el metadata store de MLflow, donde se guarda información relacionada con los experimentos, ejecuciones, métricas y artefactos.
-  
-- MinIO: Sistema de almacenamiento de objetos compatible con S3. Aquí se guardan los artefactos (modelos entrenados, datasets, etc.) generados por MLflow.
-  
-- MLfLOW: Servidor de seguimiento de experimentos. Permite registrar ejecuciones, visualizar métricas, almacenar modelos y gestionar su ciclo de vida.
-  
-- PostgreSQL: Base de datos utilizada por Airflow para registrar información sobre la ejecución de los DAGs, tareas, historiales, etc.
+- **MySQL**: Base de datos para almacenar el metadata store de MLflow, donde se guarda información relacionada con los experimentos, ejecuciones, métricas y artefactos.
+- **MinIO**: Sistema de almacenamiento de objetos compatible con S3. Aquí se guardan los artefactos (modelos entrenados, datasets, etc.) generados por MLflow. 
+- **MLfLOW**: Servidor de seguimiento de experimentos. Permite registrar ejecuciones, visualizar métricas, almacenar modelos y gestionar su ciclo de vida.
+- **PostgreSQL**: Base de datos utilizada por Airflow para registrar información sobre la ejecución de los DAGs, tareas, historiales, etc.
+- **Airflow** (Webserver & Scheduler): Herramienta de orquestación que permite programar y ejecutar flujos de trabajo (pipelines). En este proyecto, Airflow es responsable de recolectar los datos desde la API cada 5 minutos, procesarlos y activar flujos de entrenamiento.
+- **API de interferencia**: Servicio que expone el modelo entrenado para realizar predicciones. Se conecta a MLflow para cargar modelos directamente desde el artifact store (MinIO).
+- **UI (Streamlit)**: Aplicación web que permite a los usuarios interactuar de forma visual con el sistema, hacer inferencias, ver resultados y consultar métricas del modelo (TBC)
 
-- Airflow (Webserver & Scheduler): Herramienta de orquestación que permite programar y ejecutar flujos de trabajo (pipelines). En este proyecto, Airflow es responsable de recolectar los datos desde la API cada 5 minutos, procesarlos y activar flujos de entrenamiento.
+### Acceso a los Servicios
 
-- API de interferencia: Servicio que expone el modelo entrenado para realizar predicciones. Se conecta a MLflow para cargar modelos directamente desde el artifact store (MinIO).
+Una vez que todos los servicios estén corriendo:
 
-- UI (Streamlit): Aplicación web que permite a los usuarios interactuar de forma visual con el sistema, hacer inferencias, ver resultados y consultar métricas del modelo (TBC)
+| Servicio              | URL                                                       | Credenciales                                       |
+|-----------------------|-----------------------------------------------------------|---------------------------------------------------|
+| **Airflow**           | [http://10.43.100.103:8080](http://10.43.100.103:8080)     | usuario: `admin` / password: `admin`              |
+| **MLflow**            | [http://10.43.100.103:5000](http://10.43.100.103:5000)     | Sin autenticación                                 |
+| **MinIO Console**     | [http://10.43.100.103:9001](http://10.43.100.103:9001)     | usuario: `admin` / password: `supersecret`        |
+| **Inference API**     | [http://10.43.100.103:8989](http://10.43.100.103:8989)     | Sin autenticación                                 |
+| **API Docs**          | [http://10.43.100.103:8989/docs](http://10.43.100.103:8989/docs) | Documentación interactiva                         |
+| **Streamlit UI**      | [http://10.43.100.103:8503](http://10.43.100.103:8503)   | Sin autenticación                                 |
+
 
 
 
