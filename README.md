@@ -1,3 +1,5 @@
+Integrantes del Equipo: Santiago Gil Gallego y Yolanda Hernández Hernández
+
 # MLOps Pipeline - Recolección de Datos y Entrenamiento de Modelos
 Este proyecto de MLOps está diseñado para construir un pipeline completo de entrenamiento y despliegue de un modelo de IA, utilizando herramientas como Airflow, MLflow, MinIO y Docker. Todo el entorno ha sido orquestado mediante docker-compose para facilitar su despliegue y asegurar la reproducibilidad.
 
@@ -132,6 +134,7 @@ Al correrse 6 batch exitosamente observamos lo siguiente:
 MLflow permite comparar de forma efectiva los modelos generados por el pipeline de MLOps. Con base en estas ejecuciones, **Gradient Boosting** es el modelo con mejor desempeño y se considera el candidato ideal para ser desplegado a través de la API de inferencia.
 
 MLflow permite compar
+
 
 
 
