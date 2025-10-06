@@ -94,8 +94,7 @@ taller5/
 
 El proceso de entrenamiento del modelo es orquestado mediante Airflow, el cual se encarga de ejecutar periódicamente un DAG que recolecta datos desde la API externa, entrena distintos modelos como: Regresión Logistica, Random forest y  Gradient boosting registrando los resultados en MLflow.
 
-<img width="1432" height="707" alt="Airflow-Dags" src="https://github.com/user-attachments/assets/e83cc77a-0fee-47dc-a6cb-023c7642cbd5" />
-
+<img width="1426" height="449" alt="Captura de pantalla 2025-10-05 a la(s) 9 45 40 p m" src="https://github.com/user-attachments/assets/7f4ccc7e-64d8-4e7d-8cfb-aad33df8081b" />
 
 Cada vez que se ejecuta este pipeline, se lanza una nueva ejecución (run) en MLflow, donde se registran las métricas de desempeño como: accuracy, f1_score, precision y recall y los hiperparámetros del modelo entrenado. Esto permite comparar fácilmente los resultados entre distintas configuraciones y algoritmos.
 
@@ -108,11 +107,30 @@ Cada registro representa la ejecución de un modelo específico:
 - **random_forest**: valúa su rendimiento y guarda el modelo en MinIO vía MLflow
 - **Logistic_regression** Funciona como baseline o comparativo frente a modelos más complejos
   
-<img width="1434" height="782" alt="Experimentos" src="https://github.com/user-attachments/assets/131fa9d6-15a4-465e-ac00-0af0e9d81b7a" />
-
-
+<img width="1434" height="782" alt="Experimentos" src="https://github.com/user-attachments/assets/29a5761f-c543-493a-945d-ebb6fd209024" />
 
 Cada ejecución incluye el tracking automático del modelo, sus hiperparámetros, artefactos y métricas, lo que permite un análisis comparativo robusto.
+
+Al correrse 6 batch exitosamente observamos lo siguiente:
+
+### Observaciones Clave
+
+| Métrica     | Mejor Modelo         | Valor Máximo |
+|-------------|----------------------|--------------|
+| Accuracy    | Gradient Boosting    | 0.97         |
+| F1-Score    | Gradient Boosting    | 0.97         |
+| Precision   | Gradient Boosting    | 0.99         |
+| Recall      | Gradient Boosting    | 0.97         |
+
+- El modelo **Gradient Boosting** muestra el mejor rendimiento general, con métricas destacadas en todos los indicadores de evaluación.
+- **Random Forest** también ofrece un desempeño sólido, con valores cercanos al 0.91–0.96.
+- **Logistic Regression**, como modelo base (baseline), tiene un rendimiento menor (~0.74–0.76), siendo útil como punto de comparación.
+
+###  Conclusión
+MLflow permite comparar de forma efectiva los modelos generados por el pipeline de MLOps. Con base en estas ejecuciones, **Gradient Boosting** es el modelo con mejor desempeño y se considera el candidato ideal para ser desplegado a través de la API de inferencia.
+
+MLflow permite compar
+
 
 
 
