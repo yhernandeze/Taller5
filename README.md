@@ -94,11 +94,13 @@ taller5/
 
 El proceso de entrenamiento del modelo es orquestado mediante Airflow, el cual se encarga de ejecutar periódicamente un DAG que recolecta datos desde la API externa, entrena distintos modelos como: Regresión Logistica, Random forest y  Gradient boosting registrando los resultados en MLflow.
 
-<img width="1426" height="449" alt="Captura de pantalla 2025-10-05 a la(s) 9 45 40 p m" src="https://github.com/user-attachments/assets/7f4ccc7e-64d8-4e7d-8cfb-aad33df8081b" />
+<img width="1428" height="535" alt="Airflow-batch6" src="https://github.com/user-attachments/assets/c6ec57bf-dea6-4563-b77f-45ae8d0d08f6" />
+
 
 Cada vez que se ejecuta este pipeline, se lanza una nueva ejecución (run) en MLflow, donde se registran las métricas de desempeño como: accuracy, f1_score, precision y recall y los hiperparámetros del modelo entrenado. Esto permite comparar fácilmente los resultados entre distintas configuraciones y algoritmos.
 
 En la pestaña "Experimental" de MLflow, se puede visualizar el desempeño de cada uno de los modelos entrenados. A continuación se resumen los registros mostrados en la imagen:
+
 
 ### ¿Qué sucede en cada registro?
 Cada registro representa la ejecución de un modelo específico:
@@ -130,6 +132,7 @@ Al correrse 6 batch exitosamente observamos lo siguiente:
 MLflow permite comparar de forma efectiva los modelos generados por el pipeline de MLOps. Con base en estas ejecuciones, **Gradient Boosting** es el modelo con mejor desempeño y se considera el candidato ideal para ser desplegado a través de la API de inferencia.
 
 MLflow permite compar
+
 
 
 
