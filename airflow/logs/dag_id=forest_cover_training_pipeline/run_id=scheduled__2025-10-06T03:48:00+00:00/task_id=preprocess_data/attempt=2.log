@@ -1,0 +1,24 @@
+[2025-10-06T03:55:08.986+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: forest_cover_training_pipeline.preprocess_data scheduled__2025-10-06T03:48:00+00:00 [queued]>
+[2025-10-06T03:55:08.992+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: forest_cover_training_pipeline.preprocess_data scheduled__2025-10-06T03:48:00+00:00 [queued]>
+[2025-10-06T03:55:08.992+0000] {taskinstance.py:1361} INFO - Starting attempt 2 of 2
+[2025-10-06T03:55:09.000+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): preprocess_data> on 2025-10-06 03:48:00+00:00
+[2025-10-06T03:55:09.008+0000] {standard_task_runner.py:57} INFO - Started process 3466 to run task
+[2025-10-06T03:55:09.014+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'forest_cover_training_pipeline', 'preprocess_data', 'scheduled__2025-10-06T03:48:00+00:00', '--job-id', '66', '--raw', '--subdir', 'DAGS_FOLDER/training_pipeline.py', '--cfg-path', '/tmp/tmpg5w84lfb']
+[2025-10-06T03:55:09.017+0000] {standard_task_runner.py:85} INFO - Job 66: Subtask preprocess_data
+[2025-10-06T03:55:09.050+0000] {task_command.py:416} INFO - Running <TaskInstance: forest_cover_training_pipeline.preprocess_data scheduled__2025-10-06T03:48:00+00:00 [running]> on host 20acfc9d0a87
+[2025-10-06T03:55:09.120+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='mlops_team' AIRFLOW_CTX_DAG_ID='forest_cover_training_pipeline' AIRFLOW_CTX_TASK_ID='preprocess_data' AIRFLOW_CTX_EXECUTION_DATE='2025-10-06T03:48:00+00:00' AIRFLOW_CTX_TRY_NUMBER='2' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2025-10-06T03:48:00+00:00'
+[2025-10-06T03:55:09.305+0000] {taskinstance.py:1937} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.10/site-packages/airflow/operators/python.py", line 192, in execute
+    return_value = self.execute_callable()
+  File "/home/airflow/.local/lib/python3.10/site-packages/airflow/operators/python.py", line 209, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/dags/training_pipeline.py", line 189, in preprocess_data
+    raw = raw.dropna(subset=[
+  File "/home/airflow/.local/lib/python3.10/site-packages/pandas/core/frame.py", line 6418, in dropna
+    raise KeyError(np.array(subset)[check].tolist())
+KeyError: ['Vertical_Distance_To_VHydrology']
+[2025-10-06T03:55:09.314+0000] {taskinstance.py:1400} INFO - Marking task as FAILED. dag_id=forest_cover_training_pipeline, task_id=preprocess_data, execution_date=20251006T034800, start_date=20251006T035508, end_date=20251006T035509
+[2025-10-06T03:55:09.324+0000] {standard_task_runner.py:104} ERROR - Failed to execute job 66 for task preprocess_data (['Vertical_Distance_To_VHydrology']; 3466)
+[2025-10-06T03:55:09.363+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 1
+[2025-10-06T03:55:09.379+0000] {taskinstance.py:2778} INFO - 0 downstream tasks scheduled from follow-on schedule check

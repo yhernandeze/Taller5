@@ -1,0 +1,219 @@
+[2025-10-06T02:00:02.374+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: forest_cover_training_pipeline.fetch_data scheduled__2025-10-06T01:50:00+00:00 [queued]>
+[2025-10-06T02:00:02.461+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: forest_cover_training_pipeline.fetch_data scheduled__2025-10-06T01:50:00+00:00 [queued]>
+[2025-10-06T02:00:02.461+0000] {taskinstance.py:1361} INFO - Starting attempt 1 of 2
+[2025-10-06T02:00:02.467+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): fetch_data> on 2025-10-06 01:50:00+00:00
+[2025-10-06T02:00:02.479+0000] {standard_task_runner.py:57} INFO - Started process 4266 to run task
+[2025-10-06T02:00:02.481+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'forest_cover_training_pipeline', 'fetch_data', 'scheduled__2025-10-06T01:50:00+00:00', '--job-id', '69', '--raw', '--subdir', 'DAGS_FOLDER/training_pipeline.py', '--cfg-path', '/tmp/tmp5ozo8y1t']
+[2025-10-06T02:00:02.484+0000] {standard_task_runner.py:85} INFO - Job 69: Subtask fetch_data
+[2025-10-06T02:00:02.523+0000] {task_command.py:416} INFO - Running <TaskInstance: forest_cover_training_pipeline.fetch_data scheduled__2025-10-06T01:50:00+00:00 [running]> on host 4c3e0b03c920
+[2025-10-06T02:00:02.584+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='mlops_team' AIRFLOW_CTX_DAG_ID='forest_cover_training_pipeline' AIRFLOW_CTX_TASK_ID='fetch_data' AIRFLOW_CTX_EXECUTION_DATE='2025-10-06T01:50:00+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2025-10-06T01:50:00+00:00'
+[2025-10-06T02:00:02.623+0000] {logging_mixin.py:154} INFO - [fetch_data] attempt 1 failed: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2025-10-06T02:00:02.623+0000] {logging_mixin.py:154} INFO - [fetch_data] retrying in 1s...
+[2025-10-06T02:00:03.663+0000] {logging_mixin.py:154} INFO - [fetch_data] attempt 2 failed: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2025-10-06T02:00:03.664+0000] {logging_mixin.py:154} INFO - [fetch_data] retrying in 3s...
+[2025-10-06T02:00:06.706+0000] {logging_mixin.py:154} INFO - [fetch_data] attempt 3 failed: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2025-10-06T02:00:06.708+0000] {logging_mixin.py:154} INFO - [fetch_data] retrying in 7s...
+[2025-10-06T02:00:13.751+0000] {logging_mixin.py:154} INFO - [fetch_data] attempt 4 failed: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2025-10-06T02:00:13.754+0000] {taskinstance.py:1937} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 715, in urlopen
+    httplib_response = self._make_request(
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 462, in _make_request
+    httplib_response = conn.getresponse()
+  File "/usr/local/lib/python3.10/http/client.py", line 1375, in getresponse
+    response.begin()
+  File "/usr/local/lib/python3.10/http/client.py", line 318, in begin
+    version, status, reason = self._read_status()
+  File "/usr/local/lib/python3.10/http/client.py", line 287, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+http.client.RemoteDisconnected: Remote end closed connection without response
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.10/site-packages/requests/adapters.py", line 486, in send
+    resp = conn.urlopen(
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 799, in urlopen
+    retries = retries.increment(
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/util/retry.py", line 550, in increment
+    raise six.reraise(type(error), error, _stacktrace)
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/packages/six.py", line 769, in reraise
+    raise value.with_traceback(tb)
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 715, in urlopen
+    httplib_response = self._make_request(
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 462, in _make_request
+    httplib_response = conn.getresponse()
+  File "/usr/local/lib/python3.10/http/client.py", line 1375, in getresponse
+    response.begin()
+  File "/usr/local/lib/python3.10/http/client.py", line 318, in begin
+    version, status, reason = self._read_status()
+  File "/usr/local/lib/python3.10/http/client.py", line 287, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+urllib3.exceptions.ProtocolError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.10/site-packages/airflow/operators/python.py", line 192, in execute
+    return_value = self.execute_callable()
+  File "/home/airflow/.local/lib/python3.10/site-packages/airflow/operators/python.py", line 209, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/dags/training_pipeline.py", line 76, in fetch_data_from_api
+    r = requests.get(url, params=params, timeout=30, headers=headers)
+  File "/home/airflow/.local/lib/python3.10/site-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "/home/airflow/.local/lib/python3.10/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/home/airflow/.local/lib/python3.10/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/airflow/.local/lib/python3.10/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/airflow/.local/lib/python3.10/site-packages/requests/adapters.py", line 501, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2025-10-06T02:00:13.778+0000] {taskinstance.py:1400} INFO - Marking task as UP_FOR_RETRY. dag_id=forest_cover_training_pipeline, task_id=fetch_data, execution_date=20251006T015000, start_date=20251006T020002, end_date=20251006T020013
+[2025-10-06T02:00:13.793+0000] {standard_task_runner.py:104} ERROR - Failed to execute job 69 for task fetch_data (('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')); 4266)
+[2025-10-06T02:00:13.824+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 1
+[2025-10-06T02:00:13.851+0000] {taskinstance.py:2778} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2025-10-06T02:05:33.703+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: forest_cover_training_pipeline.fetch_data scheduled__2025-10-06T01:50:00+00:00 [queued]>
+[2025-10-06T02:05:33.819+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: forest_cover_training_pipeline.fetch_data scheduled__2025-10-06T01:50:00+00:00 [queued]>
+[2025-10-06T02:05:33.819+0000] {taskinstance.py:1361} INFO - Starting attempt 1 of 2
+[2025-10-06T02:05:33.827+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): fetch_data> on 2025-10-06 01:50:00+00:00
+[2025-10-06T02:05:33.835+0000] {standard_task_runner.py:57} INFO - Started process 229 to run task
+[2025-10-06T02:05:33.839+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'forest_cover_training_pipeline', 'fetch_data', 'scheduled__2025-10-06T01:50:00+00:00', '--job-id', '4', '--raw', '--subdir', 'DAGS_FOLDER/training_pipeline.py', '--cfg-path', '/tmp/tmp9zkjdwzq']
+[2025-10-06T02:05:33.841+0000] {standard_task_runner.py:85} INFO - Job 4: Subtask fetch_data
+[2025-10-06T02:05:33.915+0000] {task_command.py:416} INFO - Running <TaskInstance: forest_cover_training_pipeline.fetch_data scheduled__2025-10-06T01:50:00+00:00 [running]> on host 2d6451742e7c
+[2025-10-06T02:05:33.984+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='mlops_team' AIRFLOW_CTX_DAG_ID='forest_cover_training_pipeline' AIRFLOW_CTX_TASK_ID='fetch_data' AIRFLOW_CTX_EXECUTION_DATE='2025-10-06T01:50:00+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2025-10-06T01:50:00+00:00'
+[2025-10-06T02:05:34.147+0000] {logging_mixin.py:154} INFO - [fetch_data] GET http://10.43.100.103:8080/data?group_number=6 (attempt 1/4) status=200
+[2025-10-06T02:05:34.229+0000] {taskinstance.py:1937} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 3371, in _wrap_pool_connect
+    return fn()
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/base.py", line 327, in connect
+    return _ConnectionFairy._checkout(self)
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/base.py", line 894, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/base.py", line 493, in checkout
+    rec = pool._do_get()
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/impl.py", line 145, in _do_get
+    with util.safe_reraise():
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/util/langhelpers.py", line 70, in __exit__
+    compat.raise_(
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/util/compat.py", line 211, in raise_
+    raise exception
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/impl.py", line 143, in _do_get
+    return self._create_connection()
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/base.py", line 273, in _create_connection
+    return _ConnectionRecord(self)
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/base.py", line 388, in __init__
+    self.__connect()
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/base.py", line 690, in __connect
+    with util.safe_reraise():
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/util/langhelpers.py", line 70, in __exit__
+    compat.raise_(
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/util/compat.py", line 211, in raise_
+    raise exception
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/base.py", line 686, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/engine/create.py", line 574, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/engine/default.py", line 598, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+  File "/home/airflow/.local/lib/python3.10/site-packages/pymysql/connections.py", line 358, in __init__
+    self.connect()
+  File "/home/airflow/.local/lib/python3.10/site-packages/pymysql/connections.py", line 664, in connect
+    self._request_authentication()
+  File "/home/airflow/.local/lib/python3.10/site-packages/pymysql/connections.py", line 954, in _request_authentication
+    auth_packet = self._read_packet()
+  File "/home/airflow/.local/lib/python3.10/site-packages/pymysql/connections.py", line 772, in _read_packet
+    packet.raise_for_error()
+  File "/home/airflow/.local/lib/python3.10/site-packages/pymysql/protocol.py", line 221, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "/home/airflow/.local/lib/python3.10/site-packages/pymysql/err.py", line 143, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1044, "Access denied for user 'mlflow_user'@'%' to database 'datasets_db'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.10/site-packages/airflow/operators/python.py", line 192, in execute
+    return_value = self.execute_callable()
+  File "/home/airflow/.local/lib/python3.10/site-packages/airflow/operators/python.py", line 209, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/dags/training_pipeline.py", line 113, in fetch_data_from_api
+    with _engine().begin() as conn:
+  File "/usr/local/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/future/engine.py", line 379, in begin
+    with self.connect() as conn:
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/future/engine.py", line 406, in connect
+    return super(Engine, self).connect()
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 3325, in connect
+    return self._connection_cls(self, close_with_result=close_with_result)
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 96, in __init__
+    else engine.raw_connection()
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 3404, in raw_connection
+    return self._wrap_pool_connect(self.pool.connect, _connection)
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 3374, in _wrap_pool_connect
+    Connection._handle_dbapi_exception_noconnection(
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 2208, in _handle_dbapi_exception_noconnection
+    util.raise_(
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/util/compat.py", line 211, in raise_
+    raise exception
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 3371, in _wrap_pool_connect
+    return fn()
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/base.py", line 327, in connect
+    return _ConnectionFairy._checkout(self)
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/base.py", line 894, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/base.py", line 493, in checkout
+    rec = pool._do_get()
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/impl.py", line 145, in _do_get
+    with util.safe_reraise():
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/util/langhelpers.py", line 70, in __exit__
+    compat.raise_(
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/util/compat.py", line 211, in raise_
+    raise exception
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/impl.py", line 143, in _do_get
+    return self._create_connection()
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/base.py", line 273, in _create_connection
+    return _ConnectionRecord(self)
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/base.py", line 388, in __init__
+    self.__connect()
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/base.py", line 690, in __connect
+    with util.safe_reraise():
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/util/langhelpers.py", line 70, in __exit__
+    compat.raise_(
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/util/compat.py", line 211, in raise_
+    raise exception
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/pool/base.py", line 686, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/engine/create.py", line 574, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "/home/airflow/.local/lib/python3.10/site-packages/sqlalchemy/engine/default.py", line 598, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+  File "/home/airflow/.local/lib/python3.10/site-packages/pymysql/connections.py", line 358, in __init__
+    self.connect()
+  File "/home/airflow/.local/lib/python3.10/site-packages/pymysql/connections.py", line 664, in connect
+    self._request_authentication()
+  File "/home/airflow/.local/lib/python3.10/site-packages/pymysql/connections.py", line 954, in _request_authentication
+    auth_packet = self._read_packet()
+  File "/home/airflow/.local/lib/python3.10/site-packages/pymysql/connections.py", line 772, in _read_packet
+    packet.raise_for_error()
+  File "/home/airflow/.local/lib/python3.10/site-packages/pymysql/protocol.py", line 221, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "/home/airflow/.local/lib/python3.10/site-packages/pymysql/err.py", line 143, in raise_mysql_exception
+    raise errorclass(errno, errval)
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (1044, "Access denied for user 'mlflow_user'@'%' to database 'datasets_db'")
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+[2025-10-06T02:05:34.244+0000] {taskinstance.py:1400} INFO - Marking task as UP_FOR_RETRY. dag_id=forest_cover_training_pipeline, task_id=fetch_data, execution_date=20251006T015000, start_date=20251006T020533, end_date=20251006T020534
+[2025-10-06T02:05:34.254+0000] {standard_task_runner.py:104} ERROR - Failed to execute job 4 for task fetch_data ((pymysql.err.OperationalError) (1044, "Access denied for user 'mlflow_user'@'%' to database 'datasets_db'")
+(Background on this error at: https://sqlalche.me/e/14/e3q8); 229)
+[2025-10-06T02:05:34.268+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 1
+[2025-10-06T02:05:34.302+0000] {taskinstance.py:2778} INFO - 0 downstream tasks scheduled from follow-on schedule check

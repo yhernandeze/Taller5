@@ -1,0 +1,76 @@
+[2025-10-05T18:13:21.494+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: forest_cover_training_pipeline.fetch_data manual__2025-10-05T18:13:19.643907+00:00 [queued]>
+[2025-10-05T18:13:21.640+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: forest_cover_training_pipeline.fetch_data manual__2025-10-05T18:13:19.643907+00:00 [queued]>
+[2025-10-05T18:13:21.641+0000] {taskinstance.py:1361} INFO - Starting attempt 1 of 2
+[2025-10-05T18:13:21.649+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): fetch_data> on 2025-10-05 18:13:19.643907+00:00
+[2025-10-05T18:13:21.663+0000] {standard_task_runner.py:57} INFO - Started process 234 to run task
+[2025-10-05T18:13:21.670+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'forest_cover_training_pipeline', 'fetch_data', 'manual__2025-10-05T18:13:19.643907+00:00', '--job-id', '2', '--raw', '--subdir', 'DAGS_FOLDER/training_pipeline.py', '--cfg-path', '/tmp/tmpk49en7h_']
+[2025-10-05T18:13:21.676+0000] {standard_task_runner.py:85} INFO - Job 2: Subtask fetch_data
+[2025-10-05T18:13:21.723+0000] {task_command.py:416} INFO - Running <TaskInstance: forest_cover_training_pipeline.fetch_data manual__2025-10-05T18:13:19.643907+00:00 [running]> on host acfd824047cd
+[2025-10-05T18:13:21.807+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='mlops_team' AIRFLOW_CTX_DAG_ID='forest_cover_training_pipeline' AIRFLOW_CTX_TASK_ID='fetch_data' AIRFLOW_CTX_EXECUTION_DATE='2025-10-05T18:13:19.643907+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-10-05T18:13:19.643907+00:00'
+[2025-10-05T18:13:21.860+0000] {taskinstance.py:1937} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 715, in urlopen
+    httplib_response = self._make_request(
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 462, in _make_request
+    httplib_response = conn.getresponse()
+  File "/usr/local/lib/python3.10/http/client.py", line 1375, in getresponse
+    response.begin()
+  File "/usr/local/lib/python3.10/http/client.py", line 318, in begin
+    version, status, reason = self._read_status()
+  File "/usr/local/lib/python3.10/http/client.py", line 287, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+http.client.RemoteDisconnected: Remote end closed connection without response
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.10/site-packages/requests/adapters.py", line 486, in send
+    resp = conn.urlopen(
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 799, in urlopen
+    retries = retries.increment(
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/util/retry.py", line 550, in increment
+    raise six.reraise(type(error), error, _stacktrace)
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/packages/six.py", line 769, in reraise
+    raise value.with_traceback(tb)
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 715, in urlopen
+    httplib_response = self._make_request(
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "/home/airflow/.local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 462, in _make_request
+    httplib_response = conn.getresponse()
+  File "/usr/local/lib/python3.10/http/client.py", line 1375, in getresponse
+    response.begin()
+  File "/usr/local/lib/python3.10/http/client.py", line 318, in begin
+    version, status, reason = self._read_status()
+  File "/usr/local/lib/python3.10/http/client.py", line 287, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+urllib3.exceptions.ProtocolError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.10/site-packages/airflow/operators/python.py", line 192, in execute
+    return_value = self.execute_callable()
+  File "/home/airflow/.local/lib/python3.10/site-packages/airflow/operators/python.py", line 209, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/dags/training_pipeline.py", line 59, in fetch_data_from_api
+    r = requests.get(DATA_ENDPOINT, params=params, timeout=30)
+  File "/home/airflow/.local/lib/python3.10/site-packages/requests/api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+  File "/home/airflow/.local/lib/python3.10/site-packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/home/airflow/.local/lib/python3.10/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/airflow/.local/lib/python3.10/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/airflow/.local/lib/python3.10/site-packages/requests/adapters.py", line 501, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+[2025-10-05T18:13:21.872+0000] {taskinstance.py:1400} INFO - Marking task as UP_FOR_RETRY. dag_id=forest_cover_training_pipeline, task_id=fetch_data, execution_date=20251005T181319, start_date=20251005T181321, end_date=20251005T181321
+[2025-10-05T18:13:21.880+0000] {standard_task_runner.py:104} ERROR - Failed to execute job 2 for task fetch_data (('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')); 234)
+[2025-10-05T18:13:21.890+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 1
+[2025-10-05T18:13:21.911+0000] {taskinstance.py:2778} INFO - 0 downstream tasks scheduled from follow-on schedule check

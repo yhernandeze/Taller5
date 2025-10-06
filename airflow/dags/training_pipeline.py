@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
 from airflow import DAG
-from airflow.operators.python import PythonOperator
-import os
-import json
+from airflow.operators.python import PythonOperator, ShortCircuitOperator
+from airflow.exceptions import AirflowSkipException
+from airflow.models import Variable
+import os, json, time
 import requests
 import pandas as pd
 import sqlalchemy as sa
-from io import StringIO
 
 # ML / Metrics / MLflow
 import mlflow
@@ -23,9 +23,9 @@ from mlflow.tracking import MlflowClient
 # ===== ENV =====
 MLFLOW_TRACKING_URI = os.getenv('MLFLOW_TRACKING_URI', 'http://mlflow:5000')
 GROUP_NUMBER = os.getenv('GROUP_NUMBER', '6')
-# Si el profe dio host/IP distinto, cambialo vía DATA_API_URL env en compose
-DATA_API_URL = os.getenv('DATA_API_URL', f'http://10.43.100.103:8080')
-DATA_ENDPOINT = f"{DATA_API_URL}/data"
+# 🔧 IMPORTANT: base without /docs
+DATA_API_URL = os.getenv('DATA_API_URL', 'http://10.43.100.103:8080')
+DATA_ENDPOINT = f"{DATA_API_URL.rstrip('/')}/data"
 DATA_DB_URI = os.getenv('DATA_DB_URI', 'mysql+pymysql://mlflow_user:mlflow_pass@mysql:3306/datasets_db')
 
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
@@ -45,7 +45,7 @@ dag = DAG(
     'forest_cover_training_pipeline',
     default_args=default_args,
     description='Pipeline medallion: raw -> curated -> train -> promote',
-    schedule_interval='*/10 * * * *',
+    schedule_interval='*/6 * * * *',  # ⏱️ every 6 minutes
     catchup=False,
     tags=['mlops', 'training', 'forest-cover'],
 )
@@ -53,19 +53,96 @@ dag = DAG(
 def _engine():
     return sa.create_engine(DATA_DB_URI, pool_pre_ping=True, future=True)
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Gate: stop DAG if harvesting is already finished (Airflow Variable)
+def stop_if_done():
+    # When true → short-circuit (skip all downstream)
+    done = Variable.get("forest_harvest_done", default_var="false").lower() == "true"
+    if done:
+        print("[gate] forest_harvest_done=true → skipping run")
+        return False
+    return True
+
+task_gate = ShortCircuitOperator(
+    task_id='stop_if_done',
+    python_callable=stop_if_done,
+    dag=dag
+)
+
+# ─────────────────────────────────────────────────────────────────────────────
+def _table_exists(conn, schema:str, table:str) -> bool:
+    return conn.execute(
+        sa.text("""
+            SELECT COUNT(*) FROM information_schema.tables
+            WHERE table_schema = :schema AND table_name = :table
+        """),
+        {"schema": "datasets_db", "table": table}
+    ).scalar_one() > 0
+ 
 def fetch_data_from_api(**kwargs):
-    """T1: Trae JSON de API externa e inserta directo en datasets_db.forest_raw"""
+    """
+    Pull one batch with retries, idempotent by batch.
+    - If API returns no/invalid data -> mark harvest done & SKIP.
+    - If batch already exists -> SKIP.
+    - Else insert into forest_raw and push last_batch.
+    """
+    from airflow.exceptions import AirflowSkipException
     params = {'group_number': GROUP_NUMBER}
-    r = requests.get(DATA_ENDPOINT, params=params, timeout=30)
-    r.raise_for_status()
-    payload = r.json()
-
-    batch = int(payload.get('batch_number', -1))
-    data_list = payload.get('data', [])
-    if not data_list:
-        raise ValueError("API devolvió 0 registros")
-
-    # Columnas del dataset (orden exacto)
+    headers = {"Connection": "close"}
+ 
+    payload = None  # ← ensure defined
+    for attempt in range(1, 4):
+        try:
+            r = requests.get(DATA_ENDPOINT, params=params, timeout=30, headers=headers)
+            print(f"[fetch_data] GET {r.url} -> {r.status_code} (attempt {attempt}/3)")
+            r.raise_for_status()
+            try:
+                payload = r.json()
+            except ValueError:
+                # Non-JSON body
+                payload = {}
+            break
+        except Exception as e:
+            print(f"[fetch_data] attempt {attempt} failed: {e}")
+            if attempt < 3:
+                time.sleep(1 + attempt)
+            else:
+                # On last failure, surface the error
+                raise
+ 
+    # Guard: payload must be a dict with a 'data' key
+    if not isinstance(payload, dict):
+        print("[fetch_data] Non-dict payload -> SKIP")
+        raise AirflowSkipException("API returned non-JSON payload")
+ 
+    data_list = payload.get('data') or []
+    if len(data_list) == 0:
+        print("[fetch_data] API returned no data -> marking done + SKIP")
+        Variable.set("forest_harvest_done", "true")
+        raise AirflowSkipException("No more data from API")
+ 
+    # Guard: batch_number must be an int
+    try:
+        batch = int(payload.get('batch_number'))
+    except (TypeError, ValueError):
+        print("[fetch_data] Invalid batch_number -> SKIP this cycle")
+        raise AirflowSkipException("Invalid batch_number from API")
+ 
+    # Idempotency: only insert if this batch doesn't exist
+    with _engine().begin() as conn:
+        raw_exists = _table_exists(conn, "datasets_db", "forest_raw")
+        if raw_exists:
+            existing = conn.execute(
+                sa.text("SELECT COUNT(*) FROM datasets_db.forest_raw WHERE batch = :b"),
+                {"b": batch}
+            ).scalar_one()
+            if int(existing) > 0:
+                print(f"[fetch_data] batch={batch} already ingested -> SKIP")
+                raise AirflowSkipException(f"Batch {batch} already ingested")
+        else:
+            print("[fetch_data] forest_raw not found -> will create via to_sql()")
+ 
+    # Build DataFrame & insert
     cols = [
         'Elevation','Aspect','Slope',
         'Horizontal_Distance_To_Hydrology','Vertical_Distance_To_Hydrology',
@@ -73,72 +150,80 @@ def fetch_data_from_api(**kwargs):
         'Horizontal_Distance_To_Fire_Points','Wilderness_Area','Soil_Type','Cover_Type'
     ]
     df = pd.DataFrame(data_list, columns=cols)
-
-    # Tipos numéricos
+ 
     num_cols = [c for c in cols if c not in ['Wilderness_Area','Soil_Type','Cover_Type']]
     for c in num_cols + ['Cover_Type']:
         df[c] = pd.to_numeric(df[c], errors='coerce')
-
+ 
     df['batch'] = batch
     df['ingested_at'] = pd.Timestamp.utcnow()
-
+ 
     with _engine().begin() as conn:
         df.to_sql('forest_raw', con=conn, schema='datasets_db', if_exists='append', index=False)
-
-    # Dejamos el batch en XCom (ligero) por conveniencia de logging
+ 
     kwargs['ti'].xcom_push(key='last_batch', value=batch)
     return f"RAW insertado: {len(df)} filas (batch={batch})"
 
 def preprocess_data(**kwargs):
-    """T2: Lee de forest_raw (último batch) → limpia/encodea → upsert en forest_curated"""
+    from airflow.exceptions import AirflowSkipException
+ 
     ti = kwargs['ti']
     last_batch = ti.xcom_pull(key='last_batch', task_ids='fetch_data')
     if last_batch is None:
-        raise ValueError("No hay batch previo en XCom")
-
+        raise AirflowSkipException("No last_batch (upstream skipped)")
+ 
+    # 1) Read RAW rows for this batch
     with _engine().begin() as conn:
+        if not _table_exists(conn, "datasets_db", "forest_raw"):
+            raise AirflowSkipException("forest_raw does not exist yet")
+ 
         raw = pd.read_sql(
             sa.text("SELECT * FROM datasets_db.forest_raw WHERE batch = :b"),
             conn, params={"b": int(last_batch)}
         )
-
+ 
     if raw.empty:
-        raise ValueError(f"batch={last_batch} no tiene filas en forest_raw")
-
-    # Limpieza simple: dropna
-    raw = raw.dropna(subset=['Elevation','Aspect','Slope',
-                             'Horizontal_Distance_To_Hydrology','Vertical_Distance_To_Hydrology',
-                             'Horizontal_Distance_To_Roadways','Hillshade_9am','Hillshade_Noon','Hillshade_3pm',
-                             'Horizontal_Distance_To_Fire_Points','Wilderness_Area','Soil_Type','Cover_Type'])
-
-    # Dejamos **curated** igual que raw (sin encodear aún) pero “limpio”
+        raise AirflowSkipException(f"batch={last_batch} has no rows in forest_raw")
+ 
+    # 2) Clean
+    raw = raw.dropna(subset=[
+        'Elevation','Aspect','Slope',
+        'Horizontal_Distance_To_Hydrology','Vertical_Distance_To_Hydrology',
+        'Horizontal_Distance_To_Roadways','Hillshade_9am','Hillshade_Noon','Hillshade_3pm',
+        'Horizontal_Distance_To_Fire_Points','Wilderness_Area','Soil_Type','Cover_Type'
+    ])
     curated = raw.drop(columns=['ingested_at']).copy()
     curated['processed_at'] = pd.Timestamp.utcnow()
-
-    # Idempotencia por batch: borra si ya existía
+ 
+    # 3) Upsert-by-batch, but only DELETE if table exists
     with _engine().begin() as conn:
-        conn.execute(sa.text("DELETE FROM datasets_db.forest_curated WHERE batch = :b"), {"b": int(last_batch)})
+        if _table_exists(conn, "datasets_db", "forest_curated"):
+            conn.execute(
+                sa.text("DELETE FROM datasets_db.forest_curated WHERE batch = :b"),
+                {"b": int(last_batch)}
+            )
+        else:
+            print("[preprocess_data] forest_curated not found → will be created by to_sql().")
+ 
         curated.to_sql('forest_curated', con=conn, schema='datasets_db', if_exists='append', index=False)
-
+ 
     return f"CURATED upsert: {len(curated)} filas (batch={last_batch})"
 
+
 def train_models(**kwargs):
-    """T3: Lee de forest_curated (toda la historia), entrena y loggea en MLflow"""
+    """T3: Train on all curated (history) only when a new batch arrived"""
     with _engine().begin() as conn:
         df = pd.read_sql(sa.text("SELECT * FROM datasets_db.forest_curated"), conn)
 
     if df.empty:
-        raise ValueError("curated vacío")
+        raise AirflowSkipException("curated is empty")
 
-    # Split
     X = df.drop(columns=['Cover_Type','processed_at'])
     y = df['Cover_Type'].astype(int)
 
-    # Columnas por tipo (numéricas vs categóricas)
     cat_cols = ['Wilderness_Area','Soil_Type']
     num_cols = [c for c in X.columns if c not in cat_cols + ['batch']]
 
-    # Transformador reproducible (OneHotEncoder con handle_unknown=ignore)
     pre = ColumnTransformer(
         transformers=[
             ('num', StandardScaler(), num_cols),
@@ -147,7 +232,6 @@ def train_models(**kwargs):
         remainder='drop'
     )
 
-    # Modelos (dentro del pipeline)
     models = {
         'logistic_regression': LogisticRegression(max_iter=1000, random_state=42),
         'random_forest': RandomForestClassifier(n_estimators=200, random_state=42),
@@ -163,18 +247,15 @@ def train_models(**kwargs):
 
     for name, clf in models.items():
         pipe = Pipeline(steps=[('pre', pre), ('clf', clf)])
-
-        with mlflow.start_run(run_name=f"{name}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"):
+        with mlflow.start_run(run_name=f"{name}{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"):
             pipe.fit(X_train, y_train)
             y_pred = pipe.predict(X_test)
-
             metrics = {
                 "accuracy": accuracy_score(y_test, y_pred),
                 "f1_score": f1_score(y_test, y_pred, average="weighted"),
                 "precision": precision_score(y_test, y_pred, average="weighted"),
                 "recall": recall_score(y_test, y_pred, average="weighted"),
             }
-
             mlflow.log_params({
                 "model_type": name,
                 "n_features_raw": X_train.shape[1],
@@ -185,49 +266,36 @@ def train_models(**kwargs):
                 "max_batch": int(df['batch'].max()),
             })
             mlflow.log_metrics(metrics)
-
-            # Guarda dataset (pequeña muestra) como artefacto
             sample_csv = df.sample(min(1000, len(df))).to_csv(index=False)
             mlflow.log_text(sample_csv, artifact_file="data/sample_curated.csv")
-
-            # Firma y log de modelo completo (pre + clf)
-            mlflow.sklearn.log_model(
-                pipe, artifact_path="model",
-                registered_model_name=f"forest_cover_{name}"
-            )
-
+            mlflow.sklearn.log_model(pipe, artifact_path="model",
+                                     registered_model_name=f"forest_cover_{name}")
             results[name] = metrics
 
-    # Guardamos resultados mínimos para la tarea siguiente
     kwargs['ti'].xcom_push(key='results_json', value=json.dumps(results))
     return f"Entrenados: {', '.join(results.keys())}"
 
 def evaluate_and_register_best(**kwargs):
-    """T4: Elige el mejor por accuracy y compara con Production; promueve si mejora"""
+    """T4: Compare against Production and promote if better (unchanged logic)"""
     ti = kwargs['ti']
     results = json.loads(ti.xcom_pull(key='results_json', task_ids='train_models'))
     best_name, best_metrics = max(results.items(), key=lambda kv: kv[1]['accuracy'])
     target_registered_name = f"forest_cover_{best_name}"
 
     client = MlflowClient()
-    # Última versión que creamos (stage vacío) → la promovemos si mejora
     latest = client.get_latest_versions(target_registered_name, stages=[])
     if not latest:
         return f"No se encontró la última versión registrada de {target_registered_name}"
 
-    # Ordena por version y toma la última
     mv_new = sorted(latest, key=lambda m: int(m.version))[-1]
     new_acc = best_metrics['accuracy']
 
-    # Busca Production vigente (si existe)
     prod = client.get_latest_versions(target_registered_name, stages=["Production"])
     if prod:
         mv_prod = prod[0]
-        # Recupera métricas del run Production
         run = mlflow.get_run(mv_prod.run_id)
         old_acc = run.data.metrics.get('accuracy')
         if old_acc is not None and new_acc <= old_acc:
-            # No mejora → deja nota y no promueve
             client.set_model_version_tag(
                 name=mv_new.name, version=mv_new.version,
                 key="promotion_decision",
@@ -235,7 +303,6 @@ def evaluate_and_register_best(**kwargs):
             )
             return f"No promovido ({target_registered_name} v{mv_new.version}). new_acc={new_acc:.4f} <= prod_acc={old_acc:.4f}"
 
-    # Mejora (o no había prod) → promueve y archiva lo demás
     client.transition_model_version_stage(
         name=mv_new.name, version=mv_new.version,
         stage="Production", archive_existing_versions=True
@@ -253,4 +320,5 @@ task_preprocess = PythonOperator(task_id='preprocess_data', python_callable=prep
 task_train = PythonOperator(task_id='train_models', python_callable=train_models, dag=dag)
 task_eval = PythonOperator(task_id='evaluate_and_register_best', python_callable=evaluate_and_register_best, dag=dag)
 
-task_fetch_data >> task_preprocess >> task_train >> task_eval
+# Order with gate + short-circuit semantics
+task_gate >> task_fetch_data >> task_preprocess >> task_train >> task_eval
