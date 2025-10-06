@@ -1,0 +1,14 @@
+[2025-10-06T04:42:03.771+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: forest_cover_training_pipeline.fetch_data scheduled__2025-10-06T04:36:00+00:00 [queued]>
+[2025-10-06T04:42:03.777+0000] {taskinstance.py:1159} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: forest_cover_training_pipeline.fetch_data scheduled__2025-10-06T04:36:00+00:00 [queued]>
+[2025-10-06T04:42:03.778+0000] {taskinstance.py:1361} INFO - Starting attempt 1 of 2
+[2025-10-06T04:42:03.785+0000] {taskinstance.py:1382} INFO - Executing <Task(PythonOperator): fetch_data> on 2025-10-06 04:36:00+00:00
+[2025-10-06T04:42:03.791+0000] {standard_task_runner.py:57} INFO - Started process 5652 to run task
+[2025-10-06T04:42:03.795+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'forest_cover_training_pipeline', 'fetch_data', 'scheduled__2025-10-06T04:36:00+00:00', '--job-id', '103', '--raw', '--subdir', 'DAGS_FOLDER/training_pipeline.py', '--cfg-path', '/tmp/tmpr33x0ogp']
+[2025-10-06T04:42:03.799+0000] {standard_task_runner.py:85} INFO - Job 103: Subtask fetch_data
+[2025-10-06T04:42:03.856+0000] {task_command.py:416} INFO - Running <TaskInstance: forest_cover_training_pipeline.fetch_data scheduled__2025-10-06T04:36:00+00:00 [running]> on host 20acfc9d0a87
+[2025-10-06T04:42:03.909+0000] {taskinstance.py:1662} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='mlops_team' AIRFLOW_CTX_DAG_ID='forest_cover_training_pipeline' AIRFLOW_CTX_TASK_ID='fetch_data' AIRFLOW_CTX_EXECUTION_DATE='2025-10-06T04:36:00+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2025-10-06T04:36:00+00:00'
+[2025-10-06T04:42:04.103+0000] {logging_mixin.py:154} INFO - [fetch_data] GET http://10.43.100.103:8080/data?group_number=6 -> 200 (attempt 1/3)
+[2025-10-06T04:42:04.480+0000] {python.py:194} INFO - Done. Returned value was: RAW insertado: 5810 filas (batch=7)
+[2025-10-06T04:42:04.492+0000] {taskinstance.py:1400} INFO - Marking task as SUCCESS. dag_id=forest_cover_training_pipeline, task_id=fetch_data, execution_date=20251006T043600, start_date=20251006T044203, end_date=20251006T044204
+[2025-10-06T04:42:04.517+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 0
+[2025-10-06T04:42:04.538+0000] {taskinstance.py:2778} INFO - 1 downstream tasks scheduled from follow-on schedule check
