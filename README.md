@@ -63,8 +63,7 @@ Los servicios están disponibles en las siguientes direcciones:
 | **MLflow**            | [http://10.43.100.103:5000](http://10.43.100.103:5000)     | Sin autenticación                                 |
 | **MinIO Console**     | [http://10.43.100.103:9001](http://10.43.100.103:9001)     | usuario: `admin` / password: `supersecret`        |
 | **Inference API**     | [http://10.43.100.103:8989](http://10.43.100.103:8080)     | Sin autenticación                                 |
-| **API Docs**          | [http://10.43.100.103:8989/docs](http://10.43.100.103:8080/docs) | Documentación interactiva                         |
-| **Streamlit UI**      | [http://10.43.100.103:8503](http://10.43.100.103:8503)   | Sin autenticación                                 |
+| **API Docs**          | [http://10.43.100.103:8989/docs](http://10.43.100.103:8080/docs) | Documentación interactiva                         
 
 
 ### Estructura del Proyecto
@@ -89,11 +88,27 @@ taller5/
 │   ├── main.py
 │   └── requirements.txt
 
-└── ui/                        # Interfaz Gráfica
-    ├── Dockerfile
-    ├── app.py
-    └── requirements.txt
 ```
+
+### Ejecución y Desempeño del Modelo
+
+El proceso de entrenamiento del modelo es orquestado mediante Airflow, el cual se encarga de ejecutar periódicamente un DAG que recolecta datos desde la API externa, entrena distintos modelos como: Regresión Logistica, Random forest y  Gradient boosting registrando los resultados en MLflow.
+
+<img width="1432" height="707" alt="Airflow-Dags" src="https://github.com/user-attachments/assets/e83cc77a-0fee-47dc-a6cb-023c7642cbd5" />
+
+
+Cada vez que se ejecuta este pipeline, se lanza una nueva ejecución (run) en MLflow, donde se registran las métricas de desempeño como: accuracy, f1_score, precision y recall y los hiperparámetros del modelo entrenado. Esto permite comparar fácilmente los resultados entre distintas configuraciones y algoritmos.
+
+En la pestaña "Experimental" de MLflow, se puede visualizar el desempeño de cada uno de los modelos entrenados. A continuación se resumen los registros mostrados en la imagen:
+
+### ¿Qué sucede en cada registro?
+Cada registro representa la ejecución de un modelo específico:
+
+- **gradient_boosting**: Se ejecuta con parámetros predeterminados dentro del DAG y registra sus métricas de evaluación tras entrenar con los datos recolectados de batch.
+- **random_forest**: valúa su rendimiento y guarda el modelo en MinIO vía MLflow
+- **Logistic_regression** Funciona como baseline o comparativo frente a modelos más complejos
+
+Cada ejecución incluye el tracking automático del modelo, sus hiperparámetros, artefactos y métricas, lo que permite un análisis comparativo robusto.
 
 
 
