@@ -107,8 +107,13 @@ Cada registro representa la ejecución de un modelo específico:
 - **gradient_boosting**: Se ejecuta con parámetros predeterminados dentro del DAG y registra sus métricas de evaluación tras entrenar con los datos recolectados de batch.
 - **random_forest**: valúa su rendimiento y guarda el modelo en MinIO vía MLflow
 - **Logistic_regression** Funciona como baseline o comparativo frente a modelos más complejos
+  
+<img width="1434" height="782" alt="Experimentos" src="https://github.com/user-attachments/assets/131fa9d6-15a4-465e-ac00-0af0e9d81b7a" />
+
+
 
 Cada ejecución incluye el tracking automático del modelo, sus hiperparámetros, artefactos y métricas, lo que permite un análisis comparativo robusto.
+
 
 
 
